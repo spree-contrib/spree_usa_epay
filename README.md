@@ -1,8 +1,12 @@
 SpreeUsaEpay
 ============
 
-Introduction goes here.
+include this extension in your gem file
 
+gem 'spree_usa_epay', :path => '../spree_usa_epay'
+
+when you add the payment method, set :test_model to true to use the
+sandbox server
 
 Example
 =======
