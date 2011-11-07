@@ -14,7 +14,8 @@ class Gateway::UsaEpay < Gateway
     creditcard = payment.source
     if creditcard.gateway_customer_profile_id.nil?
       profile_id = provider.add_customer(payment.amount, creditcard, creditcard.gateway_options(payment))
-      creditcard.update_attribute(:gateway_customer_profile_id, profile_id)
+      creditcard.update_attributes(:gateway_customer_profile_id => profile_id,
+                                   :gateway_payment_profile_id => 0)
     end
   end
 

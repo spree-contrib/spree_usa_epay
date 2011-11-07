@@ -10,14 +10,17 @@ module SpreeUsaEpay
     end
 
     def authorize(amount, creditcard, gateway_options)
-      token = security_token(gateway_options)
-      request = transaction_request_object(amount, creditcard, gateway_options)
-
-      response = @client.request :run_auth_only do
-        soap.body = { "Token" => token,
-                      "Params" => request }
+      if creditcard.gateway_customer_profile_id?
+        run_customer_transaction('AuthOnly', amount, creditcard, gateway_options)
+      else
+        token = security_token(gateway_options)
+        request = transaction_request_object(amount, creditcard, gateway_options)
+        response = @client.request :run_auth_only do
+          soap.body = { "Token" => token,
+                        "Params" => request }
+        end
+        billing_response response[:run_auth_only_response][:run_auth_only_return]
       end
-      billing_response response[:run_auth_only_response][:run_auth_only_return]
     end
 
 
@@ -44,36 +47,33 @@ module SpreeUsaEpay
     end
 
     #http://wiki.usaepay.com/developer/soap-1.4/methods/runcustomertransaction
-    def capture(authorization, creditcard, gateway_options)
-      token = security_token(gateway_options)
-      request = customer_transaction_request(amount, creditcard, gateway_options)
-
-      response = client.request :run_customer_transaction do
-        soap.body = { "Token" => token,
-                      "CustNum" => creditcard.gateway_customer_profile_id,
-                      "PaymentMethodID" => 0,
-                      "Parameters" =>  request }
-      end
-
+    def capture(payment, creditcard, gateway_options)
+      amount = payment.amount
+      run_customer_transaction('Sale', amount, creditcard, gateway_options)
     end
 
     def credit(amount, creditcard, response_code, gateway_options)
-      token = security_token(gateway_options)
-      request = transaction_request_object(amount, creditcard, gateway_options)
+      if creditcard.gateway_customer_profile_id?
+        run_customer_transaction('Credit', amount, creditcard, gateway_options)
+      else
+        token = security_token(gateway_options)
+        request = transaction_request_object(amount, creditcard, gateway_options)
 
-      response = @client.request :run_credit do
-        soap.body = { "Token" => token,
-                      "Params" => request }
+        response = @client.request :run_credit do
+          soap.body = { "Token" => token,
+                        "Params" => request }
+        end
+        billing_response response[:run_credit_response][:run_credit_return]
       end
-      billing_response response[:run_credit_response][:run_credit_return]
     end
 
-    def void(response_code, creditcard, gateway_options)
+    def void(response_code, gateway_options)
       response = @client.request :void_transaction do
         soap.body = { "Token" => security_token(gateway_options),
                       "RefNum" => response_code }
       end
-      billing_response response[:void_transaction_response][:void_transaction_return]
+      success = response[:void_transaction_response][:void_transaction_return] #just returns true
+      ActiveMerchant::Billing::Response.new(success, "", {}, {})
     end
 
     private
@@ -84,6 +84,24 @@ module SpreeUsaEpay
       else
         "https://www.usaepay.com/soap/gate/DFBAABC3/usaepay.wsdl"
       end
+    end
+
+    #http://wiki.usaepay.com/developer/soap-1.4/methods/runcustomertransaction
+    # Commands are Sale, AuthOnly, Credit, Check and CheckCredit
+    def run_customer_transaction(command, amount, creditcard, gateway_options)
+      return unless creditcard.gateway_customer_profile_id?
+
+      token = security_token(gateway_options)
+      request = customer_transaction_request(amount, creditcard, gateway_options)
+      request['Command'] = command
+
+      response = @client.request :run_customer_transaction do
+        soap.body = { "Token" => token,
+                      "CustNum" => creditcard.gateway_customer_profile_id,
+                      "PaymentMethodID" => creditcard.gateway_payment_profile_id,
+                      "Parameters" =>  request }
+      end
+      billing_response response[:run_customer_transaction_response][:run_customer_transaction_return]
     end
 
     def billing_response(response)
