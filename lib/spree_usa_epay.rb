@@ -1,4 +1,22 @@
 require 'spree_core'
-require 'spree_usa_epay/engine'
+require 'spree_usa_epay_hooks'
+
 require 'spree_usa_epay/client'
 require 'savon'
+
+module SpreeUsaEpay
+  class Engine < Rails::Engine
+
+    config.autoload_paths += %W(#{config.root}/lib)
+
+    def self.activate
+      Dir.glob(File.join(File.dirname(__FILE__), "../app/**/*_decorator*.rb")) do |c|
+        Rails.env.production? ? require(c) : load(c)
+      end
+
+      Gateway::UsaEpay.register
+    end
+
+    config.to_prepare &method(:activate).to_proc
+  end
+end
