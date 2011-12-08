@@ -1,6 +1,8 @@
 SpreeUsaEpay
 ============
 
+*If you are using Spree 0.60.x please use the 0-60-stable branch*
+
 To use the USA Epay Gateway with Spree, you will have to include the extension which is available to Beta
 Users on Github. Once you have access to the repository, you should create local copy within your application
 for easy deployment
