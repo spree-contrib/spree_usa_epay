@@ -48,7 +48,7 @@ module SpreeUsaEpay
 
     #http://wiki.usaepay.com/developer/soap-1.4/methods/runcustomertransaction
     def capture(payment, creditcard, gateway_options)
-      amount = payment.amount
+      amount = (payment.amount * 100).round
       run_customer_transaction('Sale', amount, creditcard, gateway_options)
     end
 
@@ -105,10 +105,9 @@ module SpreeUsaEpay
     end
 
     def billing_response(response)
-      puts response.inspect
       options = {
         :authorization => response[:ref_num],
-        :avs_result => response[:avs_result],
+        :avs_result => { :code => response[:avs_result_code] },
         :cvv_result => response[:card_code_result],
         :test => @test_mode
       }
