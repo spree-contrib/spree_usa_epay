@@ -10,7 +10,7 @@ module SpreeUsaEpay
     end
 
     initializer "spree.usa_epay.payment_methods" do |app|
-      app.config.spree.payment_methods << Gateway::UsaEpay
+      app.config.spree.payment_methods << Spree::Gateway::UsaEpay
     end
 
   end
