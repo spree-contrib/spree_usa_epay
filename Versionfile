@@ -8,5 +8,6 @@
 # "0.40.x" => { :tag => "v1.0.0", :version => "1.0.0" }
 #
 
-"0.70.x" => { :branch => "master"}
+"1.0.x" => { :branch => "master" }
+"0.70.x" => { :ref => "a8d5504d1103e63ca4e15adc0a88f8efd8411387"}
 
