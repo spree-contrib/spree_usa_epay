@@ -9,16 +9,23 @@ module SpreeUsaEpay
       @client = Savon::Client.new(soap_url)
     end
 
+    def request(name, body)
+      begin
+        @client.request name do 
+          soap.body = body 
+        end
+      rescue Exception => e
+        raise Spree::GatewayError.new(e.message)
+      end
+    end
+
     def authorize(amount, creditcard, gateway_options)
       if creditcard.gateway_customer_profile_id?
         run_customer_transaction('AuthOnly', amount, creditcard, gateway_options)
       else
         token = security_token(gateway_options)
         request = transaction_request_object(amount, creditcard, gateway_options)
-        response = @client.request :run_auth_only do
-          soap.body = { "Token" => token,
-                        "Params" => request }
-        end
+        response = request(:run_auth_only, { "Token" => token, "Params" => request })
         billing_response response[:run_auth_only_response][:run_auth_only_return]
       end
     end
@@ -28,10 +35,7 @@ module SpreeUsaEpay
       token = security_token(gateway_options)
       request = transaction_request_object(amount, creditcard, gateway_options)
 
-      response = @client.request :run_transaction do
-        soap.body = { "Token" => token,
-                      "Parameters" => request }
-      end
+      response = request(:run_transaction, { "Token" => token, "Params" => request })
       billing_response response[:run_transaction_response][:run_transaction_return]
     end
 
@@ -39,10 +43,7 @@ module SpreeUsaEpay
       token = security_token(gateway_options)
       customer = customer_data(amount, creditcard, gateway_options)
 
-      response = @client.request :add_customer do
-        soap.body = { "Token" => token,
-                      "CustomerData" => customer }
-      end
+      response = request(:add_customer, { "Token" => token, "CustomerData" => customer })
       response[:add_customer_response][:add_customer_return]
     end
 
@@ -59,19 +60,13 @@ module SpreeUsaEpay
         token = security_token(gateway_options)
         request = transaction_request_object(amount, creditcard, gateway_options)
 
-        response = @client.request :run_credit do
-          soap.body = { "Token" => token,
-                        "Params" => request }
-        end
+        response = request(:run_credit, { "Token" => token, "Params" => request })
         billing_response response[:run_credit_response][:run_credit_return]
       end
     end
 
     def void(response_code, gateway_options)
-      response = @client.request :void_transaction do
-        soap.body = { "Token" => security_token(gateway_options),
-                      "RefNum" => response_code }
-      end
+      response = request(:void_transaction, { "Token" => security_token(gateway_options), "RefNum" => response_code })
       success = response[:void_transaction_response][:void_transaction_return] #just returns true
       ActiveMerchant::Billing::Response.new(success, "", {}, {})
     end
@@ -95,12 +90,10 @@ module SpreeUsaEpay
       request = customer_transaction_request(amount, creditcard, gateway_options)
       request['Command'] = command
 
-      response = @client.request :run_customer_transaction do
-        soap.body = { "Token" => token,
-                      "CustNum" => creditcard.gateway_customer_profile_id,
-                      "PaymentMethodID" => creditcard.gateway_payment_profile_id,
-                      "Parameters" =>  request }
-      end
+      response = request(:run_customer_transaction,{"Token" => token,
+                                                    "CustNum" => creditcard.gateway_customer_profile_id,
+                                                    "PaymentMethodID" => creditcard.gateway_payment_profile_id,
+                                                    "Parameters" =>  request })
       billing_response response[:run_customer_transaction_response][:run_customer_transaction_return]
     end
 
