@@ -112,8 +112,21 @@ module SpreeUsaEpay
         :test => @test_mode
       }
 
-      success = response[:error_code] == "0"
-      message = success ? response[:result] : response[:error]
+      case response[:result_code].to_s
+        when "A"
+          success = true
+          message = response[:result]
+        when "D"
+          success = false
+          message = response[:result]
+        when "E"
+          success = false
+          message = response[:error]
+        else
+          success = false
+          message = "Unexpected result_code from USA Epay"
+      end
+
       ActiveMerchant::Billing::Response.new(success, message, {}, options)
     end
 
