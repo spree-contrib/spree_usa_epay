@@ -15,7 +15,7 @@ module SpreeUsaEpay
           soap.body = body 
         end
       rescue Exception => e
-        raise Spree::GatewayError.new(e.message)
+        raise Spree::Core::GatewayError.new(e.message)
       end
     end
 
