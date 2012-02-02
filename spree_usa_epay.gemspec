@@ -2,9 +2,9 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_usa_epay'
-  s.version     = '0.70.1'
-  s.summary     = 'Add gem summary here'
-  s.description = 'Add (optional) gem description here'
+  s.version     = '1.0.0'
+  s.summary     = 'Spree Payment Gateway for USA ePay'
+  s.description = 'Wrapper for SOAP USA ePay Web Service'
   s.required_ruby_version = '>= 1.8.7'
   s.authors = ["Spree Commerce"]
 
@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  s.add_dependency 'spree_core', '~> 1.0.0.rc1'
+  s.add_dependency('spree_core', '~>1.0.0.rc3')
   s.add_dependency 'savon'
   s.add_development_dependency 'rspec-rails'
 end
