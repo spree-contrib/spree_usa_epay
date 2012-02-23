@@ -6,17 +6,17 @@ Gem::Specification.new do |s|
   s.summary     = 'Spree Payment Gateway for USA ePay'
   s.description = 'Wrapper for SOAP USA ePay Web Service'
   s.required_ruby_version = '>= 1.8.7'
-  s.authors = ["Chris Mar"]
 
-  s.email             = 'support@spreecommerce.com'
-  s.homepage          = 'http://www.spreecommerce.com'
+  s.authors     = ["Chris Mar"]
+  s.email       = 'support@spreecommerce.com'
+  s.homepage    = 'http://www.spreecommerce.com'
 
-  #s.files         = `git ls-files`.split("\n")
-  #s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.files         = `git ls-files`.split("\n")
+  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  s.add_dependency('spree_core', '>= 1.0.0')
+  s.add_dependency('spree_core', '>=1.0.0')
   s.add_dependency 'savon'
   s.add_development_dependency 'rspec-rails'
 end
