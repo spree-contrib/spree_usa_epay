@@ -3,6 +3,8 @@ module Spree
     preference :source_key, :string
     preference :pin, :string
 
+    attr_accessible :preferred_source_key, :preferred_pin
+    
     def provider_class
       SpreeUsaEpay::Client
     end
