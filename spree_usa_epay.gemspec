@@ -2,7 +2,7 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_usa_epay'
-  s.version     = '1.0.1'
+  s.version     = '1.0.2'
   s.summary     = 'Spree Payment Gateway for USA ePay'
   s.description = 'Payment Method for USA ePay SOAP Webservice'
   s.required_ruby_version = '>= 1.8.7'
