@@ -16,8 +16,14 @@ module Spree
     def create_profile(payment)
       amount = (payment.amount * 100).round
       creditcard = payment.source
+      gateway_options = if creditcard.respond_to?(:gateway_options)
+        creditcard.gateway_options(payment)
+      else
+        payment.gateway_options(payment)
+      end
+
       if creditcard.gateway_customer_profile_id.nil?
-        profile_id = provider.add_customer(amount, creditcard, creditcard.gateway_options(payment))
+        profile_id = provider.add_customer(amount, creditcard, payment.gateway_options(payment))
         creditcard.update_attributes(:gateway_customer_profile_id => profile_id,
                                      :gateway_payment_profile_id => 0)
       end
