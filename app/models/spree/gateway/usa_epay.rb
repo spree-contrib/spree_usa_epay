@@ -19,7 +19,7 @@ module Spree
       gateway_options = if creditcard.respond_to?(:gateway_options)
         creditcard.gateway_options(payment)
       else
-        payment.send(:gateway_options, payment)
+        payment.send(:gateway_options)
       end
 
       if creditcard.gateway_customer_profile_id.nil?
