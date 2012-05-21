@@ -23,7 +23,7 @@ module Spree
       end
 
       if creditcard.gateway_customer_profile_id.nil?
-        profile_id = provider.add_customer(amount, creditcard, payment.gateway_options(payment))
+        profile_id = provider.add_customer(amount, creditcard, gateway_options)
         creditcard.update_attributes(:gateway_customer_profile_id => profile_id,
                                      :gateway_payment_profile_id => 0)
       end
