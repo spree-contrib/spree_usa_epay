@@ -162,6 +162,7 @@ module SpreeUsaEpay
         'Tax' => double_money(gateway_options[:tax]),
         'Subtotal' => double_money(gateway_options[:subtotal]),
         'Shipping' => double_money(gateway_options[:shipping]),
+        'Discount' => double_money(gateway_options[:discount]),
         'OrderID' => gateway_options[:order_id] }
     end
 
