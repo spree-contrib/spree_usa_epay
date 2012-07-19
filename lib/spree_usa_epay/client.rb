@@ -32,11 +32,14 @@ module SpreeUsaEpay
 
 
     def purchase(amount, creditcard, gateway_options)
-      token = security_token(gateway_options)
-      request = transaction_request_object(amount, creditcard, gateway_options)
-
-      response = request(:run_transaction, { "Token" => token, "Params" => request })
-      billing_response response[:run_transaction_response][:run_transaction_return]
+      if creditcard.gateway_customer_profile_id?
+        run_customer_transaction('Sale', amount, creditcard, gateway_options)
+      else
+        token = security_token(gateway_options)
+        request = transaction_request_object(amount, creditcard, gateway_options)
+        response = request(:run_transaction, { "Token" => token, "Params" => request })
+        billing_response response[:run_transaction_response][:run_transaction_return]
+      end
     end
 
     def add_customer(amount, creditcard, gateway_options)
