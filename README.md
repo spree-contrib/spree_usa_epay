@@ -8,7 +8,7 @@ add spree_usa_epay to your Gemfile with the proper git references.
 
 You can add this gem manually:
 
-  gem 'spree_usa_epay', :git => 'git@github.com:spree/spree_usa_epay.git'
+  gem 'spree_usa_epay', :git => 'git://github.com/spree/spree_usa_epay.git'
 
 
 Once installed, the USA Epay Gateway should be available as a provider when defining Payment Methods in Spree.
