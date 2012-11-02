@@ -11,8 +11,8 @@ module SpreeUsaEpay
 
     def request(name, body)
       begin
-        @client.request name do 
-          soap.body = body 
+        @client.request name do
+          soap.body = body
         end
       rescue Exception => e
         raise Spree::Core::GatewayError.new(e.message)
@@ -52,8 +52,10 @@ module SpreeUsaEpay
 
     #http://wiki.usaepay.com/developer/soap-1.4/methods/runcustomertransaction
     def capture(payment, creditcard, gateway_options)
-      amount = (payment.amount * 100).round
-      run_customer_transaction('Sale', amount, creditcard, gateway_options)
+      response = request(:capture_transaction, { 'Token' => security_token(gateway_options),
+                                                 'RefNum' => payment.response_code,
+                                                 'Amount' => payment.amount })
+      billing_response response[:capture_transaction_response][:capture_transaction_return]
     end
 
     def credit(amount, creditcard, response_code, gateway_options)
@@ -104,7 +106,7 @@ module SpreeUsaEpay
     def billing_response(response)
       options = {
         :authorization => response[:ref_num],
-        :avs_result => { :code => response[:avs_result_code] },
+        :avs_result => { :code => response[:avs_result_code].to_s },
         :cvv_result => response[:card_code_result],
         :test => @test_mode
       }
