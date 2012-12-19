@@ -216,7 +216,7 @@ module SpreeUsaEpay
     end
 
     def customer_credit_transaction_request(amount, creditcard, gateway_options)
-      { 'Command' => 'Sale',
+      { 'Command' => 'Credit',
         'ClientIP' => gateway_options[:ip],
         'isRecurring' => false,
         'Details' => credit_transaction_details(amount, creditcard, gateway_options) }
