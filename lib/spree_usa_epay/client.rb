@@ -179,16 +179,12 @@ module SpreeUsaEpay
     def credit_transaction_details(amount, creditcard, gateway_options)
       gateway_options[:discount] = amount
       { 'Description' => gateway_options[:customer],
-        'Amount'      => double_money(credit_amount(gateway_options)),
-        'Tax'         => double_money(gateway_options[:tax]),
-        'Subtotal'    => double_money(gateway_options[:subtotal]),
-        'Shipping'    => double_money(gateway_options[:shipping]),
-        'Discount'    => double_money(gateway_options[:discount]),
+        'Amount'      => double_money(amount),
+        'Tax'         => double_money(0),
+        'Subtotal'    => double_money(0),
+        'Shipping'    => double_money(0),
+        'Discount'    => double_money(amount),
         'OrderID'     => gateway_options[:order_id] }
-    end
-
-    def credit_amount(gateway_options)
-      gateway_options[:subtotal] + gateway_options[:tax] + gateway_options[:shipping] - gateway_options[:discount]
     end
 
     #http://wiki.usaepay.com/developer/soap-1.4/objects/customerobject
