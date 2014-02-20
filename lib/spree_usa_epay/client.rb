@@ -236,7 +236,7 @@ module SpreeUsaEpay
     end
 
     def expiration_date(creditcard)
-      ("%.2i" %  creditcard.month) + creditcard.year[2,2]
+      ("%.2i" %  creditcard.month) + creditcard.year.to_s[2,2]
     end
 
   end
